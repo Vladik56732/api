@@ -1,15 +1,12 @@
-import express from 'express'
-import cors from 'cors'
+import { Router } from 'express'
 
-const app = express()
-app.use(cors())
-app.use(express.json())
+export const router = Router()
 
 let products = [
     {
         id: 1,
         name: 'apple',
-        count: 50,
+        hours: 50,
         price: 2,
     },
     {
@@ -25,22 +22,23 @@ let products = [
         price: 3,
     },
 ]
-//read
-app.get('/products', (req, res) => {
+
+//get all
+router.get('/', (req, res) => {
     console.log(req.query)
     const { min, max } = req.query
 
     const filteredProducts = products.filter(product => {
         if (min && max) {
-            return max >= product.count && product.count >= min
+            return max >= product.hours && product.hours >= min
         }
 
         if (min) {
-            return product.count >= min
+            return product.hours >= min
         }
 
         if (max) {
-            return max >= product.count
+            return max >= product.hours
         }
 
         return true
@@ -64,7 +62,7 @@ app.get('/products', (req, res) => {
     return res.json(sortedProducts)
 })
 //get
-app.get('/products/:id', (req, res) => {
+router.get('/:id', (req, res) => {
     const { id } = req.params
 
     const product = products.find(elem => elem.id == id)
@@ -77,8 +75,8 @@ app.get('/products/:id', (req, res) => {
 
     return res.json(product)
 })
-
-app.delete('/products/:id', (req, res) => {
+//delete
+router.delete('/:id', (req, res) => {
     const { id } = req.params
 
     const product = products.find(elem => elem.id == id)
@@ -93,8 +91,8 @@ app.delete('/products/:id', (req, res) => {
 
     return res.json(products)
 })
-
-app.patch('/products/:id', (req, res) => {
+//update
+router.patch('/:id', (req, res) => {
     const { id } = req.params
     const { name } = req.body
     console.log(req.body)
@@ -118,8 +116,8 @@ app.patch('/products/:id', (req, res) => {
     })
     return res.json(product)
 })
-
-app.post('/products', (req, res) => {
+//create
+router.post('/', (req, res) => {
     const { name, count, price } = req.body
     const product = {
         id: products.length + 1,
@@ -130,8 +128,4 @@ app.post('/products', (req, res) => {
 
     products.push(product)
     return res.json(product)
-})
-
-app.listen(3000, 'localhost', () => {
-    console.log('Сервер запущен на http://localhost:3000')
 })
